@@ -1,0 +1,196 @@
+
+
+// this file is used to learn compiler option for gcc / g++
+
+1. -o
+
+Use option -o, as shown below, to specify the output file name for the executable.
+
+$ gcc main.c -o main
+
+The command above would produce an output file with name ‘main’.
+
+
+2. -Wall
+
+Enable all warnings set through -Wall option
+
+$ gcc -Wall main.c -o main
+
+
+3. -E
+
+Produce only the preprocessor output with -E option
+
+$ gcc -E main.c > main.i
+
+
+4. -S
+
+Produce only the assembly code using -S option
+
+gcc -S main.c > main.s
+
+5. -C
+
+To produce only the compiled code (without any linking), use the -C option.
+
+gcc -C main.c
+
+The command above would produce a file main.o that would contain machine level code or the compiled code.
+
+6. -save-temps
+
+Produce all the intermediate files using -save-temps function
+
+The option -save-temps can do all the work done in example 4,5 and 6 above. 
+Through this option, output at all the stages of compilation is stored in the current directory. 
+Please note that this option produces the executable also.
+
+For example :
+
+$ gcc -save-temps main.c
+
+$ ls
+a.out  main.c  main.i  main.o  main.s
+
+So we see that all the intermediate files as well as the final executable was produced in the output.
+
+7. -l
+
+Link with shared libraries using -l option
+
+The option -l can be used to link with shared libraries. For example:
+
+gcc  -Wall main.c -o main -lCPPfile
+
+The gcc command mentioned above links the code main.c with the shared library libCPPfile.so to produce the final executable ‘main’.
+
+
+8. -fPIC
+
+Create position independent code using -fPIC option
+
+While creating the shared libraries, position independent code should be produced.
+This helps the shared library to get loaded as any address instead of some fixed address. For this -fPIC option is used.
+
+For example, the following commands create a shared library libCfile.so from source file Cfile.c:
+
+$ gcc -c -Wall -Werror -fPIC Cfile.c
+$ gcc -shared -o libCfile.so Cfile.o
+
+So we see that the option -fPIC was used in creation of a shared library.
+
+9. -V
+
+Print all the executed commands using -V option
+The option -v can be used to provide verbose information on all the steps gcc takes while compiling a source file.
+
+10. -ansi
+
+Enable the support of ISO C89 programs using -ansi option
+
+11. -funsigned-char
+
+Interpret char as unsigned char using -funsigned-char option
+
+12. Interpret char as signed char using -fsigned-char option
+
+13. Use compile time macros using -D option
+
+The compiler option D can be used to define compile time macros in code.
+Here is an example :
+
+#include<stdio.h>
+
+int main(void)
+{
+#ifdef MY_MACRO
+      printf("\n Macro defined \n");
+#endif
+      return 0;
+}
+
+The compiler option -D can be used to define the macro MY_MACRO from command line.
+
+$ gcc -Wall -DMY_MACRO main.c -o main
+$ ./main
+
+ Macro defined 
+
+14. Convert warnings into errors with -Werror option
+
+15. Provide gcc options through a file using @ option
+
+The options to gcc can also be provided through a file. This can be done using the @ option followed by the file name containing the options. More than one options are separated by a white space.
+
+Here is an example :
+
+$ cat opt_file 
+-Wall -omain
+
+The opt_file contains the options.
+
+Now compile the code by providing opt_file along with option @.
+
+$ gcc main.c @opt_file
+main.c: In function ‘main’:
+main.c:6:11: warning: ‘i’ is used uninitialized in this function [-Wuninitialized]
+
+$ ls main
+main
+
+The output confirms that file opt_file was parsed to get the options and the compilation was done accordingly.
+
+16. gcc -O option flag
+
+Set the compiler's optimization level.
+
+option  optimization level                                  execution time  code size   memory usage    compile time
+-O0     optimization for compilation time (default)             +               +            -              -
+-O1 or -O   optimization for code size and execution time       -               -            +              +
+-O2     optimization more for code size and execution time      --                           +              ++
+-O3     optimization more for code size and execution time      ---                          +              +++
+-Os     optimization for code size                                              --                          ++
+-Ofast  O3 with fast none accurate math calculations            ---                          +              +++
+
++increase ++increase more +++increase even more -reduce --reduce more ---reduce even more
+
+16.gcc -I option flag
+
+gcc -I adds include directory of header files.
+
+$ gcc -Idir [options] [source files] [object files] [-o output file]
+
+Example
+
+proj/src/myheader.h:
+
+// myheader.h
+#define NUM1 5
+
+ myfile.c:
+
+ // myfile.c
+#include <stdio.h>
+#include "myheader.h"
+  
+  void main()
+  {
+          int num = NUM1;
+          printf("num=%d\n", num);
+  }
+
+   Build myfile.c without include directory proj/src :
+
+   $ gcc myfile.c -o myfile
+   myfile.c:2:22: fatal error: myheader.h: No such file or directory
+   compilation terminated.
+   $
+
+    Build myfile.c with include directory proj/src :
+
+    $ gcc -Iproj/src myfile.c -o myfile
+    $ ./myfile
+    num=5
+    $
